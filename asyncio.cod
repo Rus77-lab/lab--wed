@@ -1,0 +1,15 @@
+import aiohttp
+import asyncio
+
+async def fetch_users(session):
+    async with session.get('https://jsonplaceholder.typicode.com/users') as response:
+        return await response.json()
+
+async def main():
+    async with aiohttp.ClientSession() as session:
+        users = await fetch_users(session)
+        for user in users:
+            print(f"Name: {user['name']}, Email: {user['email']}")
+
+if __name__ == '__main__':
+    asyncio.run(main())
