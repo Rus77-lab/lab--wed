@@ -1,0 +1,76 @@
+Файл: client/src/App.js
+
+import React from 'react';
+
+function App() {
+  return (
+    <div>
+      <h1>Hello World!</h1>
+    </div>
+  );
+}
+
+export default App;
+
+
+Файл: client/src/index.js (если его нет, создайте его с содержимым ниже)
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+
+Файл: server.js
+
+const express = require('express');
+const path = require('path');
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Отдача статических файлов из React-приложения
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+// Обработка маршрута на главной странице
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+
+// Запуск сервера
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+
+Установка зависимостей
+
+mkdir hello-world-react
+cd hello-world-react
+npx create-react-app client
+npm init -y
+npm install express
+
+
+Сборка React-приложения
+
+
+cd client
+npm run build
+
+
+Запуск сервера
+
+
+cd ..
+node server.js
+
+Доступно по адресу http://localhost:5000
+
+
