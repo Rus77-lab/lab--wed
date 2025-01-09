@@ -1,0 +1,49 @@
+@startuml
+class User {
+    - userID: int
+    - username: String
+    - password: String
+    + login(): void
+    + logout(): void
+}
+
+class Product {
+    - productID: int
+    - name: String
+    - price: double
+    + getDetails(): String
+    + updatePrice(newPrice: double): void
+}
+
+class Order {
+    - orderID: int
+    - userID: int
+    - productID: int
+    - quantity: int
+    + createOrder(): void
+    + cancelOrder(): void
+}
+
+User --> Order : places
+Product --> Order : contains
+@enduml
+
+
+
+
+Таблица с описанием терминов
+Термин	Описание
+User	Класс, представляющий пользователя системы, с атрибутами для хранения информации о пользователе.
+Product	Класс, представляющий продукт, с атрибутами для хранения информации о продукте, такими как название и цена.
+Order	Класс, представляющий заказ, который включает в себя информацию о пользователе, продукте и количестве.
+userID	Уникальный идентификатор пользователя.
+productID	Уникальный идентификатор продукта.
+orderID	Уникальный идентификатор заказа.
+username	Имя пользователя, используемое для входа в систему.
+password	Пароль пользователя для аутентификации.
+login()	Метод, позволяющий пользователю войти в систему.
+logout()	Метод, позволяющий пользователю выйти из системы.
+getDetails()	Метод, возвращающий информацию о продукте.
+updatePrice()	Метод, позволяющий обновить цену продукта.
+createOrder()	Метод, позволяющий создать новый заказ.
+cancelOrder()	Метод, позволяющий отменить существующий заказ.
