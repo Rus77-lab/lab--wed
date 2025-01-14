@@ -1,0 +1,76 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+from typing import List, Optional
+
+# Инициализация приложения
+app = FastAPI(title="CRUD для задач (ToDo)")
+
+# Pydantic модель задачи
+class Task(BaseModel):
+    id: int
+    title: str = Field(..., max_length=100, description="Название задачи")
+    description: Optional[str] = Field(None, description="Описание задачи")
+    completed: bool = False
+
+# Модель для создания и обновления задачи
+class TaskCreateUpdate(BaseModel):
+    title: str = Field(..., max_length=100, description="Название задачи")
+    description: Optional[str] = Field(None, description="Описание задачи")
+
+# Временное хранилище задач
+tasks: List[Task] = []
+
+# Генерация ID для задач
+def get_next_id() -> int:
+    return len(tasks) + 1
+
+# ---------------------- CRUD ОПЕРАЦИИ ----------------------
+
+# Получить список всех задач
+@app.get("/tasks", response_model=List[Task], summary="Получить список всех задач")
+async def get_tasks():
+    return tasks
+
+# Создать новую задачу
+@app.post("/tasks", response_model=Task, summary="Создать новую задачу")
+async def create_task(task_data: TaskCreateUpdate):
+    task = Task(id=get_next_id(), **task_data.dict())
+    tasks.append(task)
+    return task
+
+# Получить задачу по ID
+@app.get("/tasks/{task_id}", response_model=Task, summary="Получить задачу по ID")
+async def get_task(task_id: int):
+    task = next((t for t in tasks if t.id == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Задача не найдена")
+    return task
+
+# Обновить задачу
+@app.put("/tasks/{task_id}", response_model=Task, summary="Обновить задачу")
+async def update_task(task_id: int, task_data: TaskCreateUpdate):
+    task = next((t for t in tasks if t.id == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Задача не найдена")
+    task.title = task_data.title
+    task.description = task_data.description
+    return task
+
+# Удалить задачу
+@app.delete("/tasks/{task_id}", response_model=Task, summary="Удалить задачу")
+async def delete_task(task_id: int):
+    global tasks
+    task = next((t for t in tasks if t.id == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Задача не найдена")
+    tasks = [t for t in tasks if t.id != task_id]
+    return task
+
+# Отметить задачу как выполненную
+@app.put("/tasks/{task_id}/complete", response_model=Task, summary="Отметить задачу как выполненную")
+async def complete_task(task_id: int):
+    task = next((t for t in tasks if t.id == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Задача не найдена")
+    task.completed = True
+    return task

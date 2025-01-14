@@ -1,0 +1,47 @@
+
+1) Dockerfile
+
+FROM python:3.10-slim
+
+# Устанавливаем рабочую директорию внутри контейнера
+WORKDIR /app
+
+# Копируем файлы проекта в контейнер
+COPY . /app
+
+# Устанавливаем зависимости
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Указываем порт, который будет использовать FastAPI
+EXPOSE 8000
+
+# Команда для запуска приложения
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+
+2) docker-compose
+
+version: "3.8"
+
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_todo
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+3. Шаги для настройки проекта
+1. Создать файл requirements.txt
+Добавьте зависимости вашего проекта, например:
+
+plaintext
+Копировать код
+fastapi==0.95.2
+uvicorn==0.23.2
